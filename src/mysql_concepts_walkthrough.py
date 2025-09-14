@@ -8,7 +8,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, text
 
 # Connect to MySQL server (not a specific DB yet)
-engine = create_engine('mysql+mysqldb://root:root7623@localhost')
+engine = create_engine('mysql+mysqlconnector://root:root7623@localhost')
 
 with engine.connect() as conn:
     # Drop and create database
