@@ -35,16 +35,19 @@ This file summarizes best practices for using MySQL with Python and SQLAlchemy, 
 - Use LIMIT for pagination.
 
 ## 6. Error Handling
+
 - Catch and log exceptions; never expose raw DB errors to users.
 - Use transactions (`with conn.begin(): ...`) for multi-step operations.
 - Roll back on error to avoid partial updates.
 
 ## 7. Performance
+
 - Profile queries with `EXPLAIN`.
 - Avoid N+1 query problems (fetch related data in one query).
 - Use connection pooling for high-concurrency apps.
 
 ## 8. Maintainability
+
 - Use Alembic or similar for schema migrations.
 - Document schema and business logic in code and README.
 - Write unit tests for all DB logic.
