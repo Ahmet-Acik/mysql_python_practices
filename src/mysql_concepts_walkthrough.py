@@ -87,12 +87,71 @@ with engine.connect() as conn:
     print("Deleted one order item.")
 
     # Demonstrate ALTER TABLE
+
+    print("\n--- ALTER TABLE DEMONSTRATIONS ---")
+    # 1. ADD COLUMN
     conn.execute(text("ALTER TABLE customers ADD COLUMN email VARCHAR(100) DEFAULT 'unknown@example.com'"))
     print("Added email column to customers.")
 
+    # 2. DROP COLUMN
+    conn.execute(text("ALTER TABLE customers DROP COLUMN email"))
+    print("Dropped email column from customers.")
+
+    # 3. MODIFY COLUMN (change type)
+    conn.execute(text("ALTER TABLE customers MODIFY COLUMN name VARCHAR(200) NOT NULL"))
+    print("Modified 'name' column type to VARCHAR(200).")
+
+    # 4. CHANGE COLUMN (rename and change type)
+    conn.execute(text("ALTER TABLE customers CHANGE COLUMN name full_name VARCHAR(150) NOT NULL"))
+    print("Renamed 'name' to 'full_name' and changed type to VARCHAR(150).")
+
+    # 5. ADD INDEX
+    conn.execute(text("ALTER TABLE customers ADD INDEX idx_full_name (full_name)"))
+    print("Added index on full_name.")
+
+    # 6. DROP INDEX
+    conn.execute(text("ALTER TABLE customers DROP INDEX idx_full_name"))
+    print("Dropped index on full_name.")
+
+    # 7. ADD UNIQUE
+    conn.execute(text("ALTER TABLE customers ADD UNIQUE uq_full_name (full_name)"))
+    print("Added UNIQUE constraint on full_name.")
+
+    # 8. DROP UNIQUE (by dropping the index)
+    conn.execute(text("ALTER TABLE customers DROP INDEX uq_full_name"))
+    print("Dropped UNIQUE constraint on full_name.")
+
+    # 9. RENAME TABLE
+    conn.execute(text("RENAME TABLE customers TO customers_renamed"))
+    print("Renamed table 'customers' to 'customers_renamed'.")
+
+    # 10. ADD COLUMN for FK demo
+    conn.execute(text("ALTER TABLE customers_renamed ADD COLUMN ref_order_id INT NULL"))
+    print("Added ref_order_id column for FK demo.")
+
+    # 11. ADD FOREIGN KEY
+    conn.execute(text("ALTER TABLE customers_renamed ADD CONSTRAINT fk_ref_order FOREIGN KEY (ref_order_id) REFERENCES orders(order_id)"))
+    print("Added FOREIGN KEY constraint.")
+
+    # 12. DROP FOREIGN KEY
+    # Need to get the constraint name (MySQL auto-generates it if not named)
+    fk_name = None
+    result = conn.execute(text("SHOW CREATE TABLE customers_renamed"))
+    for row in result:
+        create_stmt = row[1]
+        import re
+        m = re.search(r'CONSTRAINT `([^`]*)` FOREIGN KEY', create_stmt)
+        if m:
+            fk_name = m.group(1)
+    if fk_name:
+        conn.execute(text(f"ALTER TABLE customers_renamed DROP FOREIGN KEY {fk_name}"))
+        print(f"Dropped FOREIGN KEY constraint: {fk_name}")
+    else:
+        print("Could not find FK constraint name to drop.")
+
     # SHOW COLUMNS
-    result = conn.execute(text("SHOW COLUMNS FROM customers"))
-    print("Columns in customers:")
+    result = conn.execute(text("SHOW COLUMNS FROM customers_renamed"))
+    print("Columns in customers_renamed:")
     for row in result:
         print(row)
 
