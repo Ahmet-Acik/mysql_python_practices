@@ -114,8 +114,26 @@ with engine.connect() as conn:
         print(row)
 
     # Demonstrate UPDATE
+
+    print("\n--- UPDATE DEMONSTRATIONS ---")
+    # All updates on 'customers' table before ALTER/RENAME
+    # 1. Basic UPDATE (single row)
     conn.execute(text("UPDATE customers SET name = 'Alice Smith' WHERE customer_id = 1"))
-    print("Updated customer name.")
+    print("Updated name for customer_id=1 in customers.")
+
+    # 2. UPDATE multiple rows
+    conn.execute(text("UPDATE customers SET name = 'Updated Name' WHERE customer_id IN (2, 3)"))
+    print("Updated name for customer_id=2 and 3 in customers.")
+
+    # 3. UPDATE with WHERE and AND/OR
+    conn.execute(text("UPDATE customers SET name = 'Special Name' WHERE customer_id = 4 OR name = 'Diana'"))
+    print("Updated name for customer_id=4 or name='Diana' in customers.")
+
+    # Show all customers after updates
+    result = conn.execute(text("SELECT * FROM customers"))
+    print("customers after all UPDATEs:")
+    for row in result:
+        print(row)
 
     # Demonstrate DELETE
     conn.execute(text("DELETE FROM order_items WHERE item_id = 3"))
@@ -140,6 +158,17 @@ with engine.connect() as conn:
     conn.execute(text("ALTER TABLE customers CHANGE COLUMN name full_name VARCHAR(150) NOT NULL"))
     print("Renamed 'name' to 'full_name' and changed type to VARCHAR(150).")
 
+    # Ensure all values in full_name are unique before adding UNIQUE constraint
+    # Add a suffix to duplicates
+    result = conn.execute(text("SELECT full_name, COUNT(*) FROM customers GROUP BY full_name HAVING COUNT(*) > 1"))
+    duplicates = [row[0] for row in result]
+    for dup in duplicates:
+        # Get all customer_ids with this duplicate name, skip the first
+        ids = [row[0] for row in conn.execute(text(f"SELECT customer_id FROM customers WHERE full_name = '{dup}' ORDER BY customer_id"))]
+        for idx, cid in enumerate(ids[1:], start=2):
+            conn.execute(text(f"UPDATE customers SET full_name = CONCAT(full_name, '_{idx}') WHERE customer_id = {cid}"))
+    print("Ensured all full_name values are unique before adding UNIQUE constraint.")
+
     # 5. ADD INDEX
     conn.execute(text("ALTER TABLE customers ADD INDEX idx_full_name (full_name)"))
     print("Added index on full_name.")
@@ -160,9 +189,46 @@ with engine.connect() as conn:
     conn.execute(text("RENAME TABLE customers TO customers_renamed"))
     print("Renamed table 'customers' to 'customers_renamed'.")
 
-    # 10. ADD COLUMN for FK demo
-    conn.execute(text("ALTER TABLE customers_renamed ADD COLUMN ref_order_id INT NULL"))
-    print("Added ref_order_id column for FK demo.")
+    # 10. ADD COLUMN for FK demo (and for update demo)
+    # Robust check: only add ref_order_id if it does not exist
+    result = conn.execute(text("SHOW COLUMNS FROM customers_renamed LIKE 'ref_order_id'"))
+    if result.fetchone() is None:
+        conn.execute(text("ALTER TABLE customers_renamed ADD COLUMN ref_order_id INT NULL"))
+        print("Added ref_order_id column for FK demo.")
+    else:
+        print("Column ref_order_id already exists in customers_renamed. Skipping add.")
+
+    # --- UPDATE DEMONSTRATIONS ON customers_renamed ---
+    print("\n--- UPDATE DEMONSTRATIONS ON customers_renamed ---")
+
+    # 4. UPDATE with JOIN (set ref_order_id in customers_renamed based on orders)
+    conn.execute(text("UPDATE customers_renamed c JOIN orders o ON c.customer_id = o.customer_id SET c.ref_order_id = o.order_id WHERE o.order_id = 1"))
+    print("Updated ref_order_id in customers_renamed using JOIN.")
+
+    # 5. UPDATE with ORDER BY and LIMIT (set only one row)
+    conn.execute(text("UPDATE customers_renamed SET full_name = 'Limited Update' ORDER BY customer_id LIMIT 1"))
+    print("Updated only one row in customers_renamed using ORDER BY and LIMIT.")
+
+    # 6. UPDATE using expressions (increment customer_id for demo, not typical)
+    # conn.execute(text("UPDATE customers_renamed SET customer_id = customer_id + 10 WHERE customer_id < 10"))
+    # print("Incremented customer_id by 10 for those < 10 in customers_renamed.")
+
+    # 7. UPDATE with subquery (set full_name to 'FromSubquery' for customers with min customer_id)
+
+    # MySQL does not allow updating and selecting from the same table in a subquery. Workaround:
+    min_id_result = conn.execute(text("SELECT MIN(customer_id) FROM customers_renamed"))
+    min_id = min_id_result.scalar()
+    if min_id is not None:
+        conn.execute(text(f"UPDATE customers_renamed SET full_name = 'FromSubquery' WHERE customer_id = {min_id}"))
+        print(f"Updated full_name for customer with min customer_id ({min_id}) in customers_renamed using subquery workaround.")
+    else:
+        print("No rows in customers_renamed to update with subquery.")
+
+    # Show all customers_renamed after updates
+    result = conn.execute(text("SELECT * FROM customers_renamed"))
+    print("customers_renamed after all UPDATEs:")
+    for row in result:
+        print(row)
 
     # 11. ADD FOREIGN KEY
     conn.execute(text("ALTER TABLE customers_renamed ADD CONSTRAINT fk_ref_order FOREIGN KEY (ref_order_id) REFERENCES orders(order_id)"))
