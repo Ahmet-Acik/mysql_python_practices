@@ -3,16 +3,19 @@
 This file summarizes best practices for using MySQL with Python and SQLAlchemy, including security, performance, and maintainability tips.
 
 ## 1. Connection Management
+
 - Use SQLAlchemy's `create_engine` for connection pooling.
 - Never hardcode credentials in code. Use environment variables or config files.
 - Always close connections (use context managers: `with engine.connect() as conn:`).
 
 ## 2. Security
+
 - Use parameterized queries to prevent SQL injection: `text("SELECT * FROM users WHERE id = :id")`
 - Restrict database user privileges to the minimum required.
 - Never expose database credentials in public repos.
 
 ## 3. Schema Design
+
 - Use `INT AUTO_INCREMENT PRIMARY KEY` for surrogate keys.
 - Always define explicit foreign keys and indexes for joins.
 - Use `NOT NULL` and appropriate defaults for all columns.
