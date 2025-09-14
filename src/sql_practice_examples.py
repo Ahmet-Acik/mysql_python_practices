@@ -12,7 +12,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 
 # Best Practice: Never hardcode credentials in production; use environment variables or config files
-engine = create_engine('mysql+mysqldb://root:root7623@localhost:3306/logistics_db')
+engine = create_engine('mysql+mysqlconnector://root:root7623@localhost:3306/logistics_db')
 
 # Utility function for displaying results
 def show_df(df, title=None):
