@@ -62,10 +62,45 @@ with engine.connect() as conn:
         print(row[0])
 
     # INSERT sample data
-    conn.execute(text("INSERT INTO customers (name) VALUES ('Alice'), ('Bob')"))
-    conn.execute(text("INSERT INTO orders (customer_id, order_date) VALUES (1, '2025-09-14'), (2, '2025-09-14')"))
-    conn.execute(text("INSERT INTO order_items (order_id, product, quantity) VALUES (1, 'Widget', 3), (1, 'Gadget', 2), (2, 'Widget', 1)"))
-    print("Inserted sample data.")
+
+    print("\n--- INSERT DEMONSTRATIONS ---")
+    # 1. Basic single-row insert
+    conn.execute(text("INSERT INTO customers (name) VALUES ('Alice')"))
+    print("Inserted single row into customers.")
+
+    # 2. Multi-row insert
+    conn.execute(text("INSERT INTO customers (name) VALUES ('Bob'), ('Charlie')"))
+    print("Inserted multiple rows into customers.")
+
+    # 3. INSERT ... SET syntax (MySQL only)
+    conn.execute(text("INSERT INTO customers SET name = 'Diana'"))
+    print("Inserted using SET syntax.")
+
+    # 4. INSERT IGNORE (will not error on duplicate, but will skip)
+    conn.execute(text("INSERT IGNORE INTO customers (customer_id, name) VALUES (1, 'Duplicate Alice')"))
+    print("Inserted with IGNORE (should skip duplicate PK).")
+
+    # 5. INSERT ... ON DUPLICATE KEY UPDATE
+    conn.execute(text("INSERT INTO customers (customer_id, name) VALUES (1, 'Alice Updated') ON DUPLICATE KEY UPDATE name = 'Alice Updated'"))
+    print("Inserted with ON DUPLICATE KEY UPDATE (should update Alice).")
+
+    # 6. INSERT with SELECT (copy data)
+    conn.execute(text("INSERT INTO customers (name) SELECT name FROM customers WHERE name = 'Bob'"))
+    print("Inserted with SELECT (copied Bob).")
+
+    # 7. REPLACE INTO (insert or replace by PK)
+    conn.execute(text("REPLACE INTO customers (customer_id, name) VALUES (2, 'Bob Replaced')"))
+    print("REPLACE INTO (should replace Bob).")
+
+    # 8. INSERT DEFAULT VALUES (if table allows, not used here since name is NOT NULL)
+    # conn.execute(text("INSERT INTO customers () VALUES ()"))
+    # print("Inserted default values (if allowed).")
+
+    # Show all customers after inserts
+    result = conn.execute(text("SELECT * FROM customers"))
+    print("Customers after all INSERTs:")
+    for row in result:
+        print(row)
 
     # SELECT with JOIN
     result = conn.execute(text('''
