@@ -36,11 +36,14 @@ Install all dependencies with `pip install -r requirements.txt`.
 
 1. **Clone the repository**
 2. **Create a virtual environment:**
+
     ```bash
     python3 -m venv .venv
     source .venv/bin/activate
     ```
+
 3. **Install dependencies:**
+
     ```bash
     pip install -r requirements.txt
     ```
@@ -61,13 +64,13 @@ python src/sql_practice_examples.py
 ## Troubleshooting
 
 - **MySQL connection errors:**
-   - Ensure MySQL server is running and accessible.
-   - Check your username, password, and host in the connection string.
-   - Install the required MySQL driver (`mysql-connector-python`).
+  - Ensure MySQL server is running and accessible.
+  - Check your username, password, and host in the connection string.
+  - Install the required MySQL driver (`mysql-connector-python`).
 - **Permission errors:**
-   - Make sure your MySQL user has privileges to create/drop databases.
+  - Make sure your MySQL user has privileges to create/drop databases.
 - **Module not found:**
-   - Double-check that all dependencies are installed in your virtual environment.
+  - Double-check that all dependencies are installed in your virtual environment.
 
 ## Contributing
 
