@@ -22,11 +22,13 @@ This file summarizes best practices for using MySQL with Python and SQLAlchemy, 
 - Normalize data, but denormalize for performance if needed.
 
 ## 4. Data Manipulation
+
 - Use bulk inserts for large data loads: `executemany` or pandas `.to_sql()`
 - Prefer `ON DUPLICATE KEY UPDATE` for upserts.
 - Use `TRUNCATE` for fast table clearing (but beware of FK constraints).
 
 ## 5. Querying
+
 - Use explicit column lists, not `SELECT *`.
 - Use JOINs instead of subqueries for better performance.
 - Use indexes on columns used in WHERE, JOIN, and ORDER BY.
