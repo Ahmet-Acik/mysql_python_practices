@@ -136,8 +136,57 @@ with engine.connect() as conn:
         print(row)
 
     # Demonstrate DELETE
-    conn.execute(text("DELETE FROM order_items WHERE item_id = 3"))
-    print("Deleted one order item.")
+
+    print("\n--- DELETE DEMONSTRATIONS ---")
+    # 1. Basic DELETE (single row)
+    conn.execute(text("DELETE FROM order_items WHERE item_id = 1"))
+    print("Deleted order_item with item_id=1.")
+
+    # 2. DELETE multiple rows with WHERE
+    conn.execute(text("DELETE FROM order_items WHERE product = 'Widget'"))
+    print("Deleted all order_items with product='Widget'.")
+
+    # 3. DELETE all rows (DELETE vs TRUNCATE)
+    # First, ensure a valid order_id exists
+    order_id_result = conn.execute(text("SELECT order_id FROM orders LIMIT 1"))
+    order_id_row = order_id_result.fetchone()
+    if order_id_row:
+        valid_order_id = order_id_row[0]
+    else:
+        # Insert a new order if none exist
+        conn.execute(text("INSERT INTO orders (customer_id, order_date) VALUES (NULL, CURDATE())"))
+        valid_order_id = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+    # Insert a row to demonstrate
+    conn.execute(text(f"INSERT INTO order_items (order_id, product, quantity) VALUES ({valid_order_id}, 'Temp', 1)"))
+    conn.execute(text("DELETE FROM order_items"))
+    print("Deleted all rows from order_items with DELETE.")
+
+    # 4. DELETE with JOIN (delete customers_renamed with no orders)
+
+    # 5. DELETE with ORDER BY and LIMIT (delete only one row)
+    # First, insert two rows to demonstrate
+    # Ensure a valid order_id exists
+    order_id_result = conn.execute(text("SELECT order_id FROM orders LIMIT 1"))
+    order_id_row = order_id_result.fetchone()
+    if order_id_row:
+        valid_order_id = order_id_row[0]
+    else:
+        conn.execute(text("INSERT INTO orders (customer_id, order_date) VALUES (NULL, CURDATE())"))
+        valid_order_id = conn.execute(text("SELECT LAST_INSERT_ID()")).scalar()
+    conn.execute(text(f"INSERT INTO order_items (order_id, product, quantity) VALUES ({valid_order_id}, 'Demo1', 1), ({valid_order_id}, 'Demo2', 2)"))
+    conn.execute(text("DELETE FROM order_items ORDER BY item_id LIMIT 1"))
+    print("Deleted one row from order_items using ORDER BY and LIMIT.")
+
+    # 6. DELETE with subquery (delete order_items for orders placed today)
+    today = conn.execute(text("SELECT CURDATE()")).scalar()
+    conn.execute(text(f"DELETE FROM order_items WHERE order_id IN (SELECT order_id FROM orders WHERE order_date = '{today}')"))
+    print("Deleted order_items for orders placed today (using subquery).")
+
+    # Show all order_items after deletes
+    result = conn.execute(text("SELECT * FROM order_items"))
+    print("order_items after all DELETEs:")
+    for row in result:
+        print(row)
 
     # Demonstrate ALTER TABLE
 
