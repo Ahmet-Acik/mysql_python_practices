@@ -10,20 +10,13 @@ Update the connection string as needed for your environment.
 
 
 
-import os
-from dotenv import load_dotenv
+
 import pandas as pd
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
+from src.db_utils import get_engine
 
 # Best Practice: Never hardcode credentials in production; use environment variables or config files
-load_dotenv()
-DB_USER = os.environ.get('MYSQL_USER')
-DB_PASS = os.environ.get('MYSQL_PASSWORD')
-DB_HOST = os.environ.get('MYSQL_HOST', 'localhost')
-DB_PORT = os.environ.get('MYSQL_PORT', '3306')
-DB_NAME = os.environ.get('MYSQL_DB')
-conn_str = f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-engine = create_engine(conn_str)
+engine = get_engine()
 
 # Utility function for displaying results
 def show_df(df, title=None):
