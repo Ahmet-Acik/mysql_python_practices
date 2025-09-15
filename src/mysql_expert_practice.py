@@ -7,7 +7,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, text
 from db_utils import get_engine
 
-# engine = create_engine('mysql+mysqlconnector://root:root7623@localhost')
+# Get the SQLAlchemy engine from utility function for better security and maintainability
 engine = get_engine()
 with engine.connect() as conn:
     # Create and use database if not exists
