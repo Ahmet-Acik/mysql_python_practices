@@ -13,7 +13,7 @@ Update the connection string as needed for your environment.
 
 import pandas as pd
 from sqlalchemy import text
-from src.db_utils import get_engine
+from db_utils import get_engine
 
 # Best Practice: Never hardcode credentials in production; use environment variables or config files
 engine = get_engine()
