@@ -7,15 +7,18 @@ import sqlalchemy
 from sqlalchemy import create_engine, text
 from db_utils import get_engine
 
-# Get the SQLAlchemy engine from utility function for better security and maintainability
-engine = get_engine()
 
-with engine.connect() as conn:
-    # Drop and create database
+# Step 1: Connect to server (no DB), drop/create DB
+server_engine = get_engine('mysql')  # Connect to default 'mysql' DB
+with server_engine.connect() as conn:
     conn.execute(text("DROP DATABASE IF EXISTS adv_demo_db"))
     print("Dropped database if existed.")
     conn.execute(text("CREATE DATABASE adv_demo_db"))
     print("Created adv_demo_db.")
+
+# Step 2: Connect to the new DB for all further operations
+engine = get_engine('adv_demo_db')
+with engine.connect() as conn:
     conn.execute(text("USE adv_demo_db"))
     print("Using adv_demo_db.")
 
