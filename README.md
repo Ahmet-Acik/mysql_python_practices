@@ -8,7 +8,7 @@ This project is a hands-on collection of Python scripts for learning and practic
 - **mysql_concepts_walkthrough.py**: Demonstrates MySQL basics (CREATE, ALTER, INSERT, UPDATE, DELETE, TRUNCATE, DROP).
 - **mysql_advanced_practice.py**: Covers advanced MySQL (constraints, indexes, views, stored procedures, triggers, transactions, user management, import/export).
 - **mysql_expert_practice.py**: Explores expert topics (window functions, partitioning, error handling, performance, JSON, event scheduler, temporary tables).
-- **sql_practice_examples.py**: Real-world SQL examples using SQLAlchemy and pandas, with best practices and comments.
+- **sql_practice_examples.py**: Real-world SQL examples using SQLAlchemy and pandas, with best practices and comments. Connects to an existing `logistics_db` (never drops/creates it).
 
 ## Project Structure
 
@@ -28,9 +28,12 @@ Install all dependencies with `pip install -r requirements.txt`.
 ## Database Setup
 
 - Requires a running MySQL server (local or remote).
-- Update the connection string in each script for your MySQL credentials and host.
-- Some scripts create and drop databases for a clean demo each run.
-- Example schemas: `logistics_db`, `demo_db`, `adv_demo_db`, `expert_demo_db` (created automatically by scripts).
+- All credentials are managed securely via a `.env` file (never hardcoded). See `.env.example` for the required variables.
+- Update your `.env` file with your MySQL credentials and host.
+- **Database management:**
+  - `sql_practice_examples.py` connects to an existing `logistics_db` (managed by another app; never dropped/created by this script).
+  - `mysql_concepts_walkthrough.py`, `mysql_advanced_practice.py`, and `mysql_expert_practice.py` create/drop their own demo databases (`demo_db`, `adv_demo_db`, `expert_demo_db`) for a clean run each time.
+- If you need the schema for `logistics_db`, see the `app/models.py` example in this repo or ask your app maintainer.
 
 ## Setup
 
@@ -59,7 +62,8 @@ python src/mysql_expert_practice.py
 python src/sql_practice_examples.py
 ```
 
-> **Note:** Never hardcode credentials in production. Use environment variables or config files for sensitive data.
+
+> **Note:** Never hardcode credentials in production. Use a `.env` file (gitignored) and `python-dotenv` for secure credential management. All scripts in this repo follow this best practice.
 
 ## Troubleshooting
 
