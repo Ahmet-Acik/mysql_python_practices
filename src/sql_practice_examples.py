@@ -11,13 +11,19 @@ Update the connection string as needed for your environment.
 
 
 
+
 import pandas as pd
 from sqlalchemy import text
 from db_utils import get_engine
 
-# Best Practice: Never hardcode credentials in production; use environment variables or config files
-# Get the SQLAlchemy engine from utility function for better security and maintainability
-engine = get_engine()
+
+# logistics_db is managed by another app. Do NOT drop or create it here.
+# Just connect to the existing logistics_db for all operations.
+engine = get_engine('logistics_db')
+
+# Utility function for displaying results
+
+# ...existing code...
 
 # Utility function for displaying results
 def show_df(df, title=None):
