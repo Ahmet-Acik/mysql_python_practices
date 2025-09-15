@@ -16,6 +16,7 @@ from sqlalchemy import text
 from db_utils import get_engine
 
 # Best Practice: Never hardcode credentials in production; use environment variables or config files
+# Get the SQLAlchemy engine from utility function for better security and maintainability
 engine = get_engine()
 
 # Utility function for displaying results
