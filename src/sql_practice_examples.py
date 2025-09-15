@@ -22,10 +22,6 @@ from db_utils import get_engine
 engine = get_engine('logistics_db')
 
 # Utility function for displaying results
-
-# ...existing code...
-
-# Utility function for displaying results
 def show_df(df, title=None):
     if title:
         print(f"\n=== {title} ===")
