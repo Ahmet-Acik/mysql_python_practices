@@ -6,15 +6,24 @@ Each run starts from scratch for a clean demo.
 import sqlalchemy
 from sqlalchemy import create_engine, text
 from db_utils import get_engine
+import sqlalchemy
+from sqlalchemy import text
+from db_utils import get_engine
 
-# Get the SQLAlchemy engine from utility function for better security and maintainability
-engine = get_engine()
+# Step 1: Connect to server (no DB), drop/create DB
+server_engine = get_engine('mysql')
+with server_engine.connect() as conn:
+    conn.execute(text("DROP DATABASE IF EXISTS expert_demo_db"))
+    print("Dropped database if existed.")
+    conn.execute(text("CREATE DATABASE expert_demo_db"))
+    print("Created expert_demo_db.")
+
+# Step 2: Connect to the new DB for all further operations
+engine = get_engine('expert_demo_db')
 with engine.connect() as conn:
-    # Create and use database if not exists
-    conn.execute(text("CREATE DATABASE IF NOT EXISTS expert_demo_db"))
-    print("Created expert_demo_db if not exists.")
     conn.execute(text("USE expert_demo_db"))
     print("Using expert_demo_db.")
+# Get the SQLAlchemy engine from utility function for better security and maintainability
 
     # 1. Advanced SELECTs: window functions, subqueries
     try:
@@ -53,7 +62,6 @@ with engine.connect() as conn:
     except Exception as e:
         print("Advanced SELECTs or window functions may not be supported:", e)
 
-    # 2. Transactions: isolation levels
     try:
         conn.execute(text("SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED"))
         # End any implicit transaction before starting a new one
