@@ -8,10 +8,6 @@ Assumes a MySQL database with a logistics schema (customers, products, orders, o
 Update the connection string as needed for your environment.
 """
 
-
-
-
-
 import pandas as pd
 from sqlalchemy import text
 from db_utils import get_engine
