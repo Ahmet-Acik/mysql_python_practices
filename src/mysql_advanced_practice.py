@@ -7,7 +7,7 @@ import sqlalchemy
 from sqlalchemy import create_engine, text
 from db_utils import get_engine
 
-# Get the SQLAlchemy engine
+# Get the SQLAlchemy engine from utility function for better security and maintainability
 engine = get_engine()
 
 with engine.connect() as conn:
