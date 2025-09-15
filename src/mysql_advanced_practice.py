@@ -5,9 +5,10 @@ Each run starts from scratch for a clean demo.
 """
 import sqlalchemy
 from sqlalchemy import create_engine, text
+from db_utils import get_engine
 
-# Update with your actual connection string
-engine = create_engine('mysql+mysqlconnector://root:root7623@localhost')
+# Get the SQLAlchemy engine
+engine = get_engine()
 
 with engine.connect() as conn:
     # Drop and create database
