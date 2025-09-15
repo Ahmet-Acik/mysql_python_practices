@@ -6,21 +6,23 @@ Each run starts from scratch for a clean demo.
 
 import sqlalchemy
 from sqlalchemy import create_engine, text
+import sqlalchemy
+from sqlalchemy import text
 from db_utils import get_engine
 
-# Connect to MySQL server (not a specific DB yet)
-# Get the SQLAlchemy engine from utility function for better security and maintainability
-engine = get_engine()
-
-with engine.connect() as conn:
-    # Drop and create database
+# Step 1: Connect to server (no DB), drop/create DB
+server_engine = get_engine('mysql')
+with server_engine.connect() as conn:
     conn.execute(text("DROP DATABASE IF EXISTS demo_db"))
     print("Dropped database if existed.")
     conn.execute(text("CREATE DATABASE demo_db"))
     print("Created demo_db.")
+
+# Step 2: Connect to the new DB for all further operations
+engine = get_engine('demo_db')
+with engine.connect() as conn:
     conn.execute(text("USE demo_db"))
     print("Using demo_db.")
-
     # SHOW DATABASES
     result = conn.execute(text("SHOW DATABASES"))
     print("Databases:")
